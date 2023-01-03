@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 (define (square a) (* a a))
 (define (smallest-divisor n)
   (find-divisor n 2))
