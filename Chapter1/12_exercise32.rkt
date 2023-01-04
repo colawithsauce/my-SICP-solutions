@@ -14,3 +14,11 @@
         ACC
         (acc-helper (next a) (combiner ACC (term a)))))
   (acc-helper a null-value))
+
+;; Exercise 33 - filtered accumulate.
+(define (filter-acc filter combiner null-value term a next b)
+  (define (f-a-helper a ACC)
+    (cond ((> a b) ACC)
+          ((filter a) (f-a-helper (next a) (combiner ACC (term a))))
+          (else (f-a-helper (next a) ACC)))) ; Only accumulate when (filter a)
+  (f-a-helper a null-value))
