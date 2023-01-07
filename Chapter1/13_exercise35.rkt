@@ -67,3 +67,22 @@
   (try first-guess))
 
 (fixed-point (lambda (x) (/ (log 1000) (log x))) 10.0)
+
+
+;; Exercise 37
+
+;; Recursive version
+(define (cont-frac n d k)
+  (define (cf-helper n d k i)
+    (if (= i k)
+        (/ (n i) (d i))
+        (/ (n i) (+ (d i) (cf-helper n d k (- i 1))))))
+  (cf-helper n d k 1))
+
+;; Iterative version
+(define (cont-frac-i n d k)
+  (define (cf-helper n d k rst)
+    (if (= k 0)
+        rst
+        (cf-helper n d (- k 1) (/ (n k) (+ (d k) rst)))))
+  (cf-helper n d k 0))
