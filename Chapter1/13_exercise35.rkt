@@ -69,7 +69,7 @@
 (fixed-point (lambda (x) (/ (log 1000) (log x))) 10.0)
 
 
-;; Exercise 37
+;;; Exercise 37
 
 ;; Recursive version
 (define (cont-frac n d k)
@@ -81,8 +81,39 @@
 
 ;; Iterative version
 (define (cont-frac-i n d k)
-  (define (cf-helper n d k rst)
+  ;; (define (cf-helper n d k rst)         ; should be more simple, because n and k are not modified in this procedure
+  ;;   (if (= k 0)
+  ;;       rst
+  ;;       (cf-helper n d (- k 1) (/ (n k) (+ (d k) rst)))))
+  (define (cf-helper k result)          ; simplified version
     (if (= k 0)
-        rst
-        (cf-helper n d (- k 1) (/ (n k) (+ (d k) rst)))))
-  (cf-helper n d k 0))
+        result
+        (cf-helper  (- k 1) (/ (n k) (+ (d k) result)))))
+  (cf-helper k 0))
+
+;;; Exercise 38
+(newline)
+(display "Exercise 38")
+(newline)
+
+(define (eula-method k)
+  (+ 2.0 (cont-frac-i (lambda (i) 1.0)
+                      (lambda (i)
+                        (if (= (remainder i 3) 2)
+                            (/ (+ i 1) 1.5)
+                            1))
+                      k)))
+(eula-method 100)
+
+
+;;; Exercise 39
+(newline)
+(display "Exercise 39")
+(newline)
+(define (tan-cf x k)
+  (cont-frac-i (lambda (i)
+                 (if (= i 1) x (* x x)))
+               (lambda (i)
+                 (- (* 2 i) 1))
+               k))
+(tan-cf (/ 3.14159 4) 100)
