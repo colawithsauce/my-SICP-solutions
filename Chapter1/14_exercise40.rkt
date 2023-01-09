@@ -51,4 +51,8 @@
 ;; ((compose square inc) 6)
 
 ;; Exercise 43
-;;; Actually I don't want to do this.
+;; TODO can't finish independently.
+(define (repeated f n)                  ; Apply `f' n times
+  (if (< n 1)                           ; Construction of procedures.
+      (lambda (x) x)
+      (compose f (repeated f (- 1 n)))))
