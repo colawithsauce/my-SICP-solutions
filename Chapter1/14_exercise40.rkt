@@ -56,3 +56,16 @@
   (if (< n 1)                           ; Construction of procedures.
       (lambda (x) x)
       (compose f (repeated f (- 1 n)))))
+
+;; Exercise 1.44
+(define (smooth f)
+  (lambda (x) (/ (+ (f x)
+                    (f (+ x dx))
+                    (f (- x dx)))
+                 3)))
+
+(define (n-fold f n)
+  ((repeated smooth n) f))
+
+;; Exercise 1.45
+
