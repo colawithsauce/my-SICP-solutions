@@ -53,8 +53,8 @@
 ;; Exercise 43
 ;; TODO can't finish independently.
 (define (repeated f n)                  ; Apply `f' n times
-  (if (< n 1)                           ; Construction of procedures.
-      (lambda (x) x)
+  (if (< n 1)
+      (lambda (x) x)                    ; Why not `f' here, rather than `(lambda (x) x)' ?
       (compose f (repeated f (- 1 n)))))
 
 ;; Exercise 1.44
@@ -68,4 +68,4 @@
   ((repeated smooth n) f))
 
 ;; Exercise 1.45
-
+;; TODO: Can't understand it.
