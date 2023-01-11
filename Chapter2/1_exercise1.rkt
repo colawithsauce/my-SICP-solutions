@@ -108,4 +108,17 @@
 (define (pow-cdr x)
   (iter-for-remainder x 3))
 
+;; Exercise 2.06
+(define zero (lambda (m) (lambda (x) x)))
+(define (add-1 n)
+  (lambda (f) (lambda (x) (f ((n f) x)))))
+;; one -> (add-1 zero)
+;; -> (lambda (f) (lambda (x) (f ((zero f) x))))
+;; -> (lambda (f) (lambda (x) (f ((lambda (x) x) x))))
+;; -> (lambda (f) (lambda (x) (f x)))
 
+;; two -> (add-1 two)
+;; -> (lambda (f) (lambda (x) (f ((one f) x))))
+;; -> (lambda (f) (lambda (x) (f (((lambda (a) (lambda (b) (a b))) f) x))))
+;; -> (lambda (f) (lambda (x) (f ((lambda (b) (f b)) x))))
+;; -> (lambda (f) (lambda (x) (f (f x))))
