@@ -87,4 +87,25 @@
 (perimeter my-rectangle)                ; Supposed to be 40
 (area my-rectangle)                     ; Supposed to be 100
 
+;; Exercise 2.04 - Trivial, skipped.
+
+
+;; Exercise 2.05 - Using 2^a*3^b to define cons, car, cdr.
+;;
+;; NOTE: Failed to workout independently, resort to find solution at
+;; http://community.schemewiki.org/?sicp-ex-2.5
+(define (pow-cons a b)
+  (* (exp 2 a) (exp 3 b)))
+(define (iter-for-remainder x divisor)
+  (define (iter try-exp)
+    (if (= 0 (remainder x (exp divisor try-exp)))
+        (iter (+ try-exp 1))
+        (- try-exp 1)))
+  (iter 1))
+
+(define (pow-car x)
+  (iter-for-remainder x 2))
+(define (pow-cdr x)
+  (iter-for-remainder x 3))
+
 
