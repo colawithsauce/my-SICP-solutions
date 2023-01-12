@@ -21,5 +21,5 @@
 ;; Exercise 2.07 - Define the constructor and selector of interval.
 
 (define (make-interval a b) (cons a b))
-(define (upper-bound z) (car z))
-(define (lower-bound z) (cdr z))
+(define (upper-bound z) (max (car z) (cdr z)))
+(define (lower-bound z) (min (car z) (cdr z)))
