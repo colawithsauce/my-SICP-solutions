@@ -63,6 +63,10 @@
 ;; Exercise 2.11 - Rewrite `mul-interval' to make it able to handle negative
 ;; inputs.
 
+;; Can't figure out how to amend it, because the original one can already handle
+;; negative values.
+
+;; The idea here is simple
 (define (mul-interval x y)
   (let ((p1 (* (lower-bound x) (lower-bound y)))
         (p2 (* (lower-bound x) (upper-bound y)))
@@ -70,3 +74,25 @@
         (p4 (* (upper-bound x) (upper-bound y))))
     (make-interval (min p1 p2 p3 p4)
                    (max p1 p2 p3 p4))))
+
+(define x (make-interval 1 10))
+(define y (make-interval -10 1))
+(display-interval (mul-interval x y))
+
+
+;; Exercise 2.12 - Write a procedure make-center-percent, that takes a center
+;; and a percentage tolerance and procedures the desired interval.
+
+(define (make-center-percent center tolerance)
+  ; tolerance should be given as the number before percentage mark.
+  (make-interval (- center (abs (* center (/ tolerance))))
+                 (+ center (abs (* center (/ tolerance))))))
+
+(define (center i)
+  (/ (+ (lower-bound i) (upper-bound i)) 2))
+
+
+;; NOTE:
+;; 1. Exercise 2.13 - It's totally a math question. Skip
+;; 2. Exercise 2.14, 2.15, 2.16, I don't know how to solve them. So I read @jz
+;; 's answer at sicp solution page. Alas. Thanks @jz, you are excellent!
