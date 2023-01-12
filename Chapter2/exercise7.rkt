@@ -47,11 +47,14 @@
 
 
 ;; Exercise 2.10 - Handle divide zero problem.
+;;
+;; EDIT: Shouldn't simply check if the bounds equals zero, because when it spawn
+;; 0, then the upper-bound should be x/0+ which is positive infinity, and it's
+;; lower-bound should be accordingly negative infinity.
 
 (define (div-interval x y)
-  (if (or (= (upper-bound y) 0)
-          (= (lower-bound y) 0))
-      (error "Can't divide zero!")
+  (if (<= 0 (upper-bound y) (lower-bound y))
+      (error "Division Error (Divisor Spans 0).")
       (mul-interval
        x
        (make-interval (/ 1.0 (upper-bound y))
