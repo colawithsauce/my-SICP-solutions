@@ -6,7 +6,7 @@
       (last-pair (cdr i))
       i))
 
-(display "Exercise 17")
+(display "Exercise 17:")
 (newline)
 (display (last-pair (list 1 2 3 4)))
 (newline)
@@ -19,7 +19,66 @@
       x
       (append (reverse (cdr x)) (list (car x)))))
 
-(display "Exercise 18")
+(display "Exercise 18:")
 (newline)
 (display (reverse (list 1 2 3 4)))
+(newline)
+
+
+;; Exercise 2.19 - Rewrite procedure in Section 1.2.2
+(define (cc amount coin-values)
+  (cond ((= amount 0) 1)
+        ((or (< amount 0) (no-more? coin-values)) 0)
+        (else
+         (+ (cc amount
+                (except-first-denomination
+                 coin-values))
+            (cc (- amount
+                   (first-denomination
+                    coin-values))
+                coin-values)))))
+
+(define (no-more? coin-values)
+  (null? coin-values))
+
+(define (except-first-denomination coin-values)
+  (cdr coin-values))
+
+(define (first-denomination coin-values)
+  (car coin-values))
+
+(define us-coins (list 50 25 10 5 1))
+(define uk-coins (list 100 50 20 10 5 2 1 0.5))
+
+(display "Exercise 19:")
+(newline)
+(display (cc 100 us-coins))
+(newline)
+
+;; The order of denominations doesn't change the result.
+
+;; Exercise 2.20 - Using the notion of arbitrary number of arguments, write a
+;; procedure `same-parity' that takes one or more integers and returns a list of
+;; all the arguments that have the same even-odd parity as the first argument.
+;;
+;; TODO: Using append like this is expensive, cuz it will recursively find the
+;; rear of the list each time called. A practical way to amend this is to build
+;; list in a reversed style and finally reverse it in the end of procedure.
+(define (same-parity . x)
+  (define (same-parity? a b)
+    (or (and (odd? a) (odd? b))
+        (and (even? a) (even? b))))
+  (define (helper a x)
+    (cond ((null? x) x)
+          ((same-parity? a (car x))
+           (append (list (car x)) (helper a (cdr x))))
+          (else
+           (helper a (cdr x)))))
+  (helper (car x) x))
+
+(display "Exercise 20:")
+(newline)
+(display (same-parity 1 2 3 4 5 6 7))
+(newline)
+(display (same-parity 2 3 4 5 6 7))
 (newline)
