@@ -15,9 +15,11 @@
 ;; Exercise 18 - Define a procedure reverse that takes a list as arguent and
 ;; returns a list of the same elements in reverse order
 (define (reverse x)
-  (if (null? (cdr x))
-      x
-      (append (reverse (cdr x)) (list (car x)))))
+  (define (helper x result)
+    (cond ((null? x) result)
+          (else
+           (helper (cdr x) (cons (car x) result)))))
+  (helper x '()))
 
 (display "Exercise 18:")
 (newline)
@@ -64,17 +66,30 @@
 ;; TODO: Using append like this is expensive, cuz it will recursively find the
 ;; rear of the list each time called. A practical way to amend this is to build
 ;; list in a reversed style and finally reverse it in the end of procedure.
-(define (same-parity . x)
+
+;; (define (same-parity . x)
+;;   (define (same-parity? a b)
+;;     (or (and (odd? a) (odd? b))
+;;         (and (even? a) (even? b))))
+;;   (define (helper a x)
+;;     (cond ((null? x) x)
+;;           ((same-parity? a (car x))
+;;            (append (list (car x)) (helper a (cdr x))))
+;;           (else
+;;            (helper a (cdr x)))))
+;;   (helper (car x) x))
+
+(define (same-parity first . rest)
   (define (same-parity? a b)
     (or (and (odd? a) (odd? b))
         (and (even? a) (even? b))))
-  (define (helper a x)
-    (cond ((null? x) x)
-          ((same-parity? a (car x))
-           (append (list (car x)) (helper a (cdr x))))
+  (define (helper first rest result)
+    (cond ((null? rest) (reverse result))
+          ((same-parity? first (car rest))
+           (helper first (cdr rest) (cons (car rest) result)))
           (else
-           (helper a (cdr x)))))
-  (helper (car x) x))
+           (helper first (cdr rest) result))))
+  (helper first rest (list first)))
 
 (display "Exercise 20:")
 (newline)
