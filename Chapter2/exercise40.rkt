@@ -71,5 +71,70 @@
                   (unique-pairs (- k 1))))
            (enumerate-interval 1 n))))
 
-(newline)
-(display (triples 40 100))
+;; (newline)
+;; (display (triples 40 100))
+
+;; Exercise 2.42 - "Eight-queens puzzle".
+;;
+;; The main idea is that, suppose we have generate the set that contains all the
+;; first k - 1 safe dispositions, how to generate the first k safe dispositions
+;; set?
+;;
+;; The main project has been given as follow.
+;;
+;; REVIEW: This program deserves rewrite.
+;; NOTE: Abstract obsession, there is lots of unneeded abstraction. - Maybe.
+(define (queens board-size)
+  (define (queen-cols k)
+    (if (= k 0)
+        (list empty-board)
+        (filter
+         (lambda (positions) (safe? k positions))
+         (flatmap
+          (lambda (rest-of-queens)
+            (map (lambda (new-row)
+                   (adjoin-position
+                    new-row k rest-of-queens))
+                 (enumerate-interval 1 board-size)))
+          (queen-cols (- k 1))))))
+  (queen-cols board-size))
+
+;; The positon of queen in board
+(define make-position cons)
+(define position-column car)
+(define position-row cdr)
+
+;; Position is (column . row)
+
+(define (same-row-or-col? a b)
+  (or (= (position-row a) (position-row b))
+      (= (position-column a) (position-column b))))
+(define (same-diagonal? a b)
+  (= (abs (- (position-row a) (position-row b)))
+     (abs (- (position-column a) (position-column b)))))
+(define (contract? a b)
+  (or (same-row-or-col? a b)
+      (same-diagonal? a b)))
+
+;; Manipulating positions
+(define (adjoin-position new-row k rest-of-queens)
+  (cons (make-position k new-row) rest-of-queens))
+(define first-position car)
+(define rest-position cdr)
+
+;; The basics
+(define empty-board nil)
+(define (safe? _k positions)
+  ;; Safe state of the kth line of queen, is no queen in its moving spawn.
+  (let ((kth-queen-pos (first-position positions))
+        (rest-queen-pos (rest-position positions)))
+    ;; For every pos in positions, if it is on the way of the kth-queen, then would yield false.
+    (accumulate
+     (lambda (a b) (and a b)) #t
+     (map (lambda (x)
+            (not (contract? kth-queen-pos x))) ; NOTE: Here is (not (contract a b)) !
+      rest-queen-pos))))
+
+;; (length (queens 8))
+
+;; Exercise 2.43 - Explain the low speed of Louis's procedure.
