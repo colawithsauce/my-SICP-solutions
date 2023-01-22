@@ -2,6 +2,12 @@
 ;; Symbolic differentiation
 (define (=number? x a) (and (number? x) (= x a)))
 
+(define (accumulate op initial sequence)
+  (if (null? sequence)
+      initial
+      (op (car sequence)
+          (accumulate op initial (cdr sequence)))))
+
 (define (exp b n)
   (define (exp-helper a b n) ;; The fundmental idea is simple, a*b^n = constant.
     (cond ((= n 0) a)
@@ -14,7 +20,6 @@
 (define same-variable? eq?)
 (define (sum? x) (eq? '+ (car x)))
 (define addend cadr)
-(define augend caddr)
 (define (make-sum a1 a2)
   (cond ((=number? a1 0) a2)
         ((=number? a2 0) a1)
@@ -24,7 +29,6 @@
          (list '+ a1 a2))))
 (define (product? x) (eq? '* (car x)))
 (define multiplier cadr)
-(define multiplicand caddr)
 (define (make-product m1 m2)
   (cond ((or (=number? m1 0) (=number? m2 0)) 0)
         ((=number? m1 1) m2)
@@ -79,3 +83,12 @@
                                        exponent))))
         (else
          (error "unkown expression type: DERIV" exp))))
+
+;; Exercise 2.57 - Supporting of arbitrary numbers of terms. Hint: Change the representation of sums, products, and exponentiations.
+(define (multiplicand x)
+  (accumulate make-product 1 (cddr x)))
+(define (augend x)
+  (accumulate make-sum 0 (cddr x)))
+
+;; The only thing to do is to rewrite these two procedure. Augend of (list '+ 'a 'b 'c) is `(+ a (+ b (+ c 0)))'.
+;; Thanks @NTeGrotenhuis at http://community.schemewiki.org/?sicp-ex-2.57 .
