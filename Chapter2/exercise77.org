@@ -60,3 +60,53 @@ b) No, he didn't solve the problem.
 c) Just add a clause, if `proc` was found, apply it, else if the arguments have same type, raise an error, else try coercion.
 * Exercise 2.82
 In this case, if there is some columns like `(complex rational complex)`, and `(complex number complex)` was given, the correct answer wouldn't be yielded. The procedure would only try `(complex complex complex)` and `(number number number)` (which is impossible although).
+* Exercise 2.83
+#+begin_src racket
+(define (install-integer)
+  (define (raise x)
+    (make-rational x 1))
+  (put 'raise '(scheme-number) raise))
+(define (install-rational x)
+  (define (raise x)
+    (make-real (/ (numerator x) (denominator x))))
+  (put 'raise '(rational) raise))
+(define (install-real)
+  (define (raise x)
+    (make-complex-rect x 0))
+  (put 'raise '(real) raise))
+(define (install-complex)
+  (define (raise x)
+    (error "bad call -- RAISE COMPLEX" x))
+  (put 'raise '(complex) raise))
+(define (raise x)
+  (apply-generic 'raise x))
+#+end_src
+* Exercise 2.84
+Note that: Only `apply-generic` takes tagged data as arguments.
+#+begin_src racket
+(define coercion-hierarchy '(integer rational real complex))
+(define (higher-coercion? typeA typeB)
+  (if (and (symbol? typeA) (symbol? typeB))
+      (let ((restA (memq typeA coercion-hierarchy))
+            (restB (memq typeB coercion-hierarchy)))
+        (if (memq typeA restB) true false)))
+  (error "bad arguments" (list typeA typeB)))
+(define (apply-generic op . args)
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get op type-tags)))
+      (if proc (apply proc (map contents args))
+          (if (= (length args) 2)
+              (let ((type1 (car type-tags))
+                    (type2 (cadr type-tags))
+                    (a1 (car args))
+                    (a2 (cadr args)))
+                (cond ((higher-coercion? type1 type2)
+                       (apply-generic a1 (raise a2)))
+                      ((higher-coercion? type2 type1)
+                       (apply-genric (raise a1) a2))
+                      (else (error "No method for these types" (list op args)))))
+              (error "No method for these types" (list op args)))))))
+#+end_src
+* Exercise 2.85
+skip.
+* Exercise 2.86
