@@ -54,3 +54,9 @@ It's straightforward
 (put '=zero? 'complex-number
      (lambda (x) (= (real-part x) (imag-part x) 0)))
 #+end_src
+* Exercise 2.81
+a) It would lead to infinity loop, because the procedure would try to convert complex to complex over and over again.
+b) No, he didn't solve the problem.
+c) Just add a clause, if `proc` was found, apply it, else if the arguments have same type, raise an error, else try coercion.
+* Exercise 2.82
+In this case, if there is some columns like `(complex rational complex)`, and `(complex number complex)` was given, the correct answer wouldn't be yielded. The procedure would only try `(complex complex complex)` and `(number number number)` (which is impossible although).
