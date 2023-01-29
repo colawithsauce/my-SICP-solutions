@@ -1,0 +1,56 @@
+* Exercise 2.77
+The generic table should likes follow:
+|           | rectangular    | polar           | complex   |
+| real-part | real-part-rect | real-part-polar | real-part |
+| ...       |                |                 |           |
+
+When call real-part to a complex data, we first call `apply-generic` to complex, and would pass the untagged data (and which were also itself tagged as "rectangular" or "polar") to procedure `apply-generic`, which should dispatch to `real-part-rect` or `real-part-polar`.
+
+In conclusion, there are totally 2 times that the `apply-generic` to be called. And dispatched to `real-part` itself at the first time, and `real-part-rect` at the second time.
+* Exercise 2.78
+#+begin_src racket
+#lang sicp
+(define (attach-tag type-tag contents)
+  (if (number? contents)
+      contents
+      (cons type-tag contents)))
+(define (type-tag datum)
+  (cond ((number? datum) 'scheme-number)
+        ((pair? datum) (car datum))
+        (else (error "bad datum: TYPE-TAG" datum))))
+(define (contents datum)
+  (cond ((number? datum) datum)
+        ((pair? datum) (cdr datum))
+        (else (error "bad datum: CONTENTS" datum))))
+#+end_src
+And we needn't modify the `scheme-number` package to make the system work, because the tag wouldn't really tag the number as `scheme-number` but to just keep its origin structure.
+* Exercise 2.79
+#+begin_src racket
+#lang sicp
+(define (rational-equ? a b)
+  (= (* (numerator a) (denominator b))
+     (* (numerator b) (denominator a))))
+(define (complex-equ? a b)
+  (and (= (real-part a) (real-part b))
+       (= (imag-part a) (imag-part b))))
+;; Install it
+(put 'equ? '(scheme-number scheme-number) =)
+(put 'equ? '(rational rational) rational-equ?)
+(put 'equ? '(complex complex) complex-equ?)
+#+end_src
+* Exercise 2.80
+It's straightforward
+#+begin_src racket
+(define (=zero? x) (apply-generic '=zero? x))
+
+;; add into scheme-number-package
+(put '=zero? 'scheme-number (lambda (x) (= x 0)))
+
+;; add into rational-number-package
+(put '=zero? 'rational-number
+     (lambda (x) (= (numer x) 0)))
+
+;; add into complex-number-package
+(put '=zero? 'complex-number
+     (lambda (x) (= (real-part x) (imag-part x) 0)))
+#+end_src
