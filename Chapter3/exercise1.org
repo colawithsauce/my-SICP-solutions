@@ -1,0 +1,79 @@
+#+title: Exercise1
+* 3.1
+#+begin_src racket
+(define (make-accumulator initial)
+  (lambda (amount) (begin (set! initial (+ initial amount)) initial)))
+#+end_src
+Simple.
+* 3.2
+#+begin_src racket
+(define (make-monitored prog)
+  (let ((count 0))
+    (lambda (arg)
+      (if (eq? arg 'how-many-calls?)
+          count
+          (begin (set! count (+ count 1))
+                 (prog arg))))))
+#+end_src
+* 3.3
+#+begin_src racket
+(define (make-account balance password)
+  (define (withdraw amount)
+    (if (> balance amount)
+        (begin (set! balance (- balance amount))
+               balance)
+        "In sufficient balance!"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (define (wrong-pass _x)
+    "Incorrect password")
+  (define (dispatch password-input op)
+    (if (eq? password-input password)
+        (cond ((eq? op 'withdraw) withdraw)
+              ((eq? op 'deposit) deposit)
+              (else (error "unkown request -- MAKE-ACCOUNT" op)))
+        wrong-pass))
+  dispatch)
+#+end_src
+* 3.4
+#+begin_src racket
+#lang racket
+(define (make-account balance password)
+  (define errorcount 0)
+  (define (call-the-cops _x) "Calling the cops")
+  (define (wrong-pass _x) "Incorrect password" errorcount)
+  (define (withdraw amount)
+    (if (> balance amount)
+        (begin (set! balance (- balance amount))
+               balance)
+        "In sufficient balance!"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (define (dispatch password-input op)
+    (if (eq? password-input password)
+        (begin
+          (set! errorcount 0)
+          (cond ((eq? op 'withdraw) withdraw)
+                ((eq? op 'deposit) deposit)
+                (else (error "unkown request -- MAKE-ACCOUNT" op))))
+        (begin
+          (set! errorcount (+ errorcount 1))
+          (if (>= errorcount 7)
+              call-the-cops
+              wrong-pass))))
+  dispatch)
+(define acc (make-account 100 'passwd))
+((acc 'wrongpass 'withdraw) 10)
+((acc 'wrongpass 'withdraw) 10)
+((acc 'wrongpass 'withdraw) 10)
+((acc 'wrongpass 'withdraw) 10)
+((acc 'wrongpass 'withdraw) 10)
+((acc 'wrongpass 'withdraw) 10)
+((acc 'wrongpass 'withdraw) 10)
+#+end_src
+
+#+RESULTS:
+: Incorrect password
+* Exercise 3.5
