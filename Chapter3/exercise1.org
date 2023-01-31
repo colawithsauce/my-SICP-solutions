@@ -16,7 +16,9 @@ Simple.
                  (prog arg))))))
 #+end_src
 * 3.3
-#+begin_src racket
+#+NAME: ex3
+#+begin_src racket :tangle exercise3-3.rkt
+#lang sicp
 (define (make-account balance password)
   (define (withdraw amount)
     (if (> balance amount)
@@ -26,23 +28,21 @@ Simple.
   (define (deposit amount)
     (set! balance (+ balance amount))
     balance)
-  (define (wrong-pass _x)
-    "Incorrect password")
   (define (dispatch password-input op)
     (if (eq? password-input password)
         (cond ((eq? op 'withdraw) withdraw)
               ((eq? op 'deposit) deposit)
               (else (error "unkown request -- MAKE-ACCOUNT" op)))
-        wrong-pass))
+        (error "wrong password!")))
   dispatch)
 #+end_src
 * 3.4
 #+begin_src racket
-#lang racket
+#lang sicp
 (define (make-account balance password)
   (define errorcount 0)
   (define (call-the-cops _x) "Calling the cops")
-  (define (wrong-pass _x) "Incorrect password" errorcount)
+  (define (wrong-pass _x) "Incorrect password")
   (define (withdraw amount)
     (if (> balance amount)
         (begin (set! balance (- balance amount))
@@ -76,4 +76,71 @@ Simple.
 
 #+RESULTS:
 : Incorrect password
-* Exercise 3.5
+* 3.5
+#+begin_src racket
+#lang sicp
+(define (random-in-range low high)
+  (let ((range (- high low)))
+    (+ low (random range))))
+(define (estimate-integral P x1 x2 y1 y2 trials)
+  ;; Return the integral of the area predicated by P
+  (define (experiment)
+    (let ((randx (random-in-range x2 x1))
+          (randy (random-in-range y2 y1)))
+      (P randx randy)))
+  (monte-carlo trials experiment))
+(define (estimate-pi trials)
+  (let ((P (lambda (x y) (< (+ (* x x) (* y y)) 1)))
+        (x1 -1) (y1 -1)
+        (x2 1) (y2 1))
+    (* (estimate-integral P x1 x2 y1 y2 trials) 4)))
+#+end_src
+* 3.6
+#+begin_src racket
+#lang sicp
+(define rand
+  (let ((x random-init))
+    (lambda (op)
+      (cond ((eq? op 'generate) (begin (set! x (rand-update x)) x))
+            ((eq? op 'reset) (lambda (new-value) (set! x new-value)))))))
+#+end_src
+* 3.7
+#+begin_src racket :tangle exercise3-7.rkt :noweb yes :results value
+#lang sicp
+(define (make-account balance password)
+  (define (withdraw amount)
+    (if (> balance amount)
+        (begin (set! balance (- balance amount))
+               balance)
+        "In sufficient balance!"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (define (auth-layer password-input . op)
+    (cond ((null? op) (eq? password-input password))
+          ((eq? password-input password) (apply dispatch op))
+          (else (error "Incorrect password!"))))
+  (define (dispatch op)
+    (cond ((eq? op 'withdraw) withdraw)
+          ((eq? op 'deposit) deposit)
+          (else (error "unkown request -- MAKE-ACCOUNT" op))))
+  auth-layer)
+(define (make-joint acc oldpass password)
+  (define (auth-layer password-input . op)
+    (cond ((null? op) (eq? password-input password))
+          ((eq? password-input password) (apply acc (cons oldpass op)))
+          (else (error "Incorrect password"))))
+  (if (acc oldpass)
+      auth-layer
+      (error "Incorrect password")))
+(define acc (make-account 100 'p))
+(define alias (make-joint acc 'p 'a))
+((alias 'a 'withdraw) 10)
+#+end_src
+
+#+RESULTS:
+: 90
+* 3.8
+I skip this question, because this situation should never occur in real programming.
+* 3.9
+Skip this question, because of its straightforward.
