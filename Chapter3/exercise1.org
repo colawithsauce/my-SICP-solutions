@@ -144,3 +144,129 @@ Simple.
 I skip this question, because this situation should never occur in real programming.
 * 3.9
 Skip this question, because of its straightforward.
+* 3.10
+There is two frame at this case, first is the "initial-amount", and the second is "balance", and to which is the body point.
+* 3.11
+skip
+* 3.12
+First should yield `(b)`, second should yield `(b c d)`
+* 3.13
+#+NAME: last-pair
+#+begin_src racket :lang sicp :tangle exercise3-13.rkt
+(define (last-pair x) (if (null? (cdr x)) x (last-pair (cdr x))))
+(define (make-cycle x)
+  (set-cdr! (last-pair x) x)
+  x)
+(define z (make-cycle (list 'a 'b 'c)))
+#+end_src
+
+#+RESULTS:
+
+Which should lead to infinite recursion.
+* 3.14
+The procedure reverses a list.
+* 3.15
+trivial
+* 3.16
+I didn't resolve it, and seek help at [[http://community.schemewiki.org/?sicp-ex-3.16][this website]]
+#+NAME: strs
+#+begin_src racket :tangle exercise3-16.rkt :noweb yes
+;; #lang sicp
+;; I didn't resolve it, and seek help at [[http://community.schemewiki.org/?sicp-ex-3.16][this website]]
+ ;; (define (count-pairs x)
+ ;;   (if (not (pair? x))
+ ;;       0
+ ;;       (+ (count-pairs (car x))
+ ;;          (count-pairs (cdr x))
+ ;;          1)))
+
+ (define str1 '(foo bar baz))
+ (count-pairs str1) ; 3
+ ; str1 -> ( . ) -> ( . ) -> ( . ) ->null
+ ;          |        |        |
+ ;          v        v        v
+ ;         'foo     'bar     'baz
+
+ (define x '(foo))
+ (define y (cons x x))
+ (define str2 (list y))
+ (count-pairs str2) ; 4
+ ; str2 -> ( . ) -> null
+ ;          |
+ ;          v
+ ;         ( . )
+ ;          | |
+ ;          v v
+ ;         ( . ) -> 'null
+ ;          |
+ ;          v
+ ;         'foo
+
+ (define x '(foo))
+ (define y (cons x x))
+ (define str3 (cons y y))
+ (count-pairs str3) ; 7
+ ; str3 -> ( . )
+ ;          | |
+ ;          v v
+ ;         ( . )
+ ;          | |
+ ;          v v
+ ;         ( . ) -> null
+ ;          |
+ ;          v
+ ;         'foo
+
+ (define str4 '(foo bar baz))
+ (set-cdr! (cddr str4) str4)
+ (count-pairs str4) ; maximum recursion depth exceeded
+ ;          ,-------------------,
+ ;          |                   |
+ ;          v                   |
+ ; str4 -> ( . ) -> ( . ) -> ( . )
+ ;          |        |        |
+ ;          v        v        v
+ ;         'foo     'bar     'baz
+#+end_src
+
+#+RESULTS:
+* 3.17
+#+begin_src racket :noweb yes :tangle exercise3-17.rkt
+#lang sicp
+(define (count-pairs x)
+  (define visited nil)
+  (define (helper x)
+    (if (or (not (pair? x))
+            (memq x visited))
+        0
+        (begin
+          (set! visited (cons x visited))     ; push x into visited
+          (+ (helper (car x))
+             (helper (cdr x))
+             1))))
+  (helper x))
+#+end_src
+* 3.18
+#+begin_src racket
+(define (contain-cycle? x)
+  (let ((encountered '()))
+    (define (helper x)
+      (cond ((null? x) #f)
+            ((memq x encountered) #t)
+            (else (set! encountered (cons x encountered))
+                  (or (helper (car x)) (helper (cdr x))))))
+    (helper x)))
+#+end_src
+* 3.19
+According to the [[https://en.wikipedia.org/wiki/Cycle_detection][Turtle and hare algorithm]] demonstrated in this page, we can simply draw a solution as follows:
+#+begin_src racket
+#lang sicp
+(define (contain-cycle? x)
+  (define (check fast slow)
+    (cond ((null? fast) #f)
+          ((eq? fast slow) #t)
+          (else (check (if (null? (cdr fast)) nil (cddr fast)) (cdr slow)))))
+  (check x (cdr x)))
+#+end_src
+* 3.20
+It's trivial, the two frames are all stem from the general environment.
